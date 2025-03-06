@@ -1,1 +1,1 @@
-# vest (<sub>s</sub>v<sub>elte</sub> <sub>t</sub>est)
+# vest (<sub>s</sub>*v*<sub>elte</sub> <sub>t</sub>*est*)
