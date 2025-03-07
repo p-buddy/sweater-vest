@@ -1,5 +1,8 @@
 import { getContext, setContext, type Component, mount } from "svelte";
 import type Container from "./Container.svelte";
+import { toPng, toJpeg, toBlob, toPixelData, toSvg, toCanvas } from "html-to-image";
+
+type Fn = (...args: any[]) => any;
 
 /** Can be replaced in the future with `Promise.withResolvers` */
 export const deferred = <T,>() => {
@@ -148,11 +151,14 @@ export type ExtractFromComponent<T extends Component<any, any, any>> =
 export type Mounted<T extends Component<any, any, any>> =
   ReturnType<typeof mount<ExtractFromComponent<T>["props"], ExtractFromComponent<T>["exports"]>>;
 
-class TestAborted extends Error {
+export class TestAborted extends Error {
   constructor(message: string = "Test aborted") {
     super(message);
   }
 }
+
+export const onAbort = (signal: AbortSignal, fn: () => void) =>
+  signal.addEventListener("abort", fn, { once: true });
 
 export const createTestAbortMechanism = () => {
   const controller = new AbortController();
@@ -163,25 +169,82 @@ export const createTestAbortMechanism = () => {
     return true;
   };
 
-  type Fn = (...args: any[]) => any;
-
   const wrap = <T extends Fn>(fn: ReturnType<T> extends Promise<any> ? never : T) =>
     (...args: Parameters<T>) => tryError() && fn(...args);
 
-  const until = new Promise<void>((_, reject) => {
-    signal.addEventListener("abort", reject, { once: true });
-  });
+  const on = onAbort.bind(null, signal);
+
+  const until = new Promise<void>(on);
 
   const proxy = <T extends object>(_target: T) => new Proxy(_target, {
     get(target, prop) {
       return tryError() && target[prop as keyof T];
     },
     set(target, prop, value) {
-      tryError();
       target[prop as keyof T] = value;
-      return true;
+      return tryError();
     }
   });
 
-  return { signal, tryError, wrap, until, controller, proxy };
+
+  return { signal, tryError, wrap, until, controller, proxy, on };
 }
+
+export const downloadURI = (dataurl: string, filename: string) => {
+  const link = document.createElement("a");
+  link.href = dataurl;
+  link.download = filename;
+  link.click();
+}
+
+const capturers = {
+  png: toPng,
+  jpeg: toJpeg,
+  blob: toBlob,
+  pixelData: toPixelData,
+  svg: toSvg,
+  canvas: toCanvas,
+};
+
+export const createCapturer = (root: HTMLElement) => {
+  type CaptureKey = keyof typeof capturers;
+  type CaptureType<T extends CaptureKey> = (typeof capturers)[T];
+  type CaptureOptions<T extends CaptureKey> = Parameters<CaptureType<T>>[1];
+  type Capture<T extends CaptureKey> = ReturnType<CaptureType<T>>;
+
+  type CapturedAsString = {
+    [k in keyof typeof capturers]:
+    Capture<k> extends Promise<infer U>
+    /**/ ? U extends string
+      /**/ ? k
+      /**/ : never
+    /**/ : never
+  }[keyof typeof capturers];
+
+  type Return<T extends CaptureKey> = T extends CapturedAsString
+    /**/ ? { uri: Capture<T>, download: (filename: string) => Promise<void> }
+    /**/ : Capture<T>
+
+  return <T extends CaptureKey>(type: T, options?: CaptureOptions<T>): Return<T> => {
+    const value = capturers[type](root, options);
+
+    switch (type) {
+      case "svg":
+      case "png":
+      case "jpeg":
+        const uri = value as Promise<string>;
+        return {
+          uri,
+          download: (filename: string) => uri.then((uri) => downloadURI(uri, filename))
+        } satisfies Return<CapturedAsString> as Return<T>;
+      case "blob":
+      case "pixelData":
+      case "canvas":
+        return value as Return<T>;
+    }
+
+    throw new Error(`Unsupported capture type: ${type}`);
+  }
+};
+
+export const untilNextFrame = () => new Promise(requestAnimationFrame);

@@ -37,7 +37,7 @@
 
   const untilEmpty = async (signal: AbortSignal) => {
     let cancelled = false;
-    signal.addEventListener("abort", () => (cancelled = true));
+    onAbort(signal, () => (cancelled = true));
     let currentTime = Date.now();
     while (aborts.size > 0 && !cancelled) {
       if (Date.now() - currentTime > 500) {
@@ -50,7 +50,7 @@
 
   const timeout = (signal: AbortSignal) => {
     let timeout: number;
-    signal.addEventListener("abort", () => clearTimeout(timeout));
+    onAbort(signal, () => clearTimeout(timeout));
     return new Promise<void>((resolve) => {
       timeout = setTimeout(() => {
         console.log("timeout");
@@ -81,9 +81,9 @@
     type Theme,
   } from "@p-buddy/dockview-svelte";
   import Runner, { type Props as RunnerProps, reset } from "./Runner.svelte";
-  import { deferred } from "./utils.js";
+  import { deferred, onAbort } from "./utils.js";
 
-  let { orientation = "HORIZONTAL", theme = "dark" }: Props = $props();
+  let { orientation = "HORIZONTAL", theme = "dark", mode }: Props = $props();
 
   let total = $state(1);
 
@@ -95,10 +95,15 @@
 
   const { promise, resolve } = deferred<API>();
 
+  const apply = (props: RunnerProps) => {
+    props.mode ??= mode;
+  };
+
   export const push = async (props: RunnerProps) => {
     pending.abort ??= abort();
     const [api] = await Promise.all([promise, pending.abort]);
     const index = count++;
+    apply(props);
     warnIfFirstAndHasPosition(index, props);
     api.addSnippetPanel("child", props, options(index, props));
   };

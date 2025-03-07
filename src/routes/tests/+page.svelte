@@ -1,12 +1,12 @@
 <script lang="ts">
-  import Vest from "$lib/Vest.svelte";
+  import Sweater from "$lib/Sweater.svelte";
 
   const values = [0, 1, 2, 3];
 </script>
 
 {#each values as i}
-  <Vest
-    body={async ({ given, expect, root }) => {
+  <Sweater
+    body={async ({ given, expect, root, capture }) => {
       const { div } = await given("div");
       expect(div).toHaveTextContent(`${i}`);
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -17,13 +17,13 @@
         {i}
       </div>
     {/snippet}
-  </Vest>
+  </Sweater>
 {/each}
 
-<Vest config orientation="VERTICAL" theme="abyss" mode="serial" />
+<Sweater config orientation="VERTICAL" theme="abyss" mode="serial" />
 
 {#each values.map((i) => i + values.length) as i}
-  <Vest
+  <Sweater
     mode="parallel"
     body={async ({ preventRender }) => {
       const render = preventRender();
@@ -34,15 +34,15 @@
     {#snippet vest(pocket: never)}
       {i}
     {/snippet}
-  </Vest>
+  </Sweater>
 {/each}
 
-<Vest config orientation="VERTICAL" theme="abyss" mode="serial">
+<Sweater config orientation="VERTICAL" theme="abyss" mode="serial">
   {#each values.map((i) => i + values.length * 2) as i}
-    <Vest
+    <Sweater
       mode="serial"
       position="above"
-      body={async (harness) => {
+      body={async ({ capture, signal, set }) => {
         await new Promise((resolve) => setTimeout(resolve, 10000));
         console.log("done");
       }}
@@ -50,6 +50,6 @@
       {#snippet vest(pocket: never)}
         {i}
       {/snippet}
-    </Vest>
+    </Sweater>
   {/each}
-</Vest>
+</Sweater>

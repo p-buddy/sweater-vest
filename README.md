@@ -1,1 +1,1 @@
-# vest (<sub>s</sub>*v*<sub>elte</sub> <sub>t</sub>*est*)
+# Sweater Vest (<ins style="color:white"><span style="color:#aa1e1e"><span>**S**</span><sup style="color:grey">weater</sup> <span style="color:#aa1e1e">**v**</span><sub style="color:#aa1e1e">_elte_</sub></span> <sub style="">_t_</sub><span style="text-">est</span></ins>)

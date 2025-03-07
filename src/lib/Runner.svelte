@@ -6,6 +6,9 @@
     type Deferred,
     retrieve,
     createTestAbortMechanism,
+    createCapturer,
+    untilNextFrame,
+    TestAborted,
   } from "./utils.js";
   import type { Snippet } from "svelte";
 
@@ -17,6 +20,9 @@
     root: HTMLElement;
     preventRender: () => () => void;
     signal: AbortSignal;
+    onAbort: (fn: () => void) => void;
+    capture: ReturnType<typeof createCapturer>;
+    untilNextFrame: typeof untilNextFrame;
   } & typeof tester;
 
   type Mode = Required<PromiseQueue>["Types"]["Task"]["mode"];
@@ -90,7 +96,6 @@ Make sure to call \`harness.preventRender()\` at the top of your body function b
   );
 
   const given: Harness["given"] = async (...keys) => {
-    abort.tryError();
     const resolved = await Promise.race([
       Promise.all(keys.map((k) => retrieve(deferredMap, k as string).promise)),
       abort.until,
@@ -113,12 +118,11 @@ Make sure to call \`harness.preventRender()\` at the top of your body function b
     return render;
   });
 
-  const { controller, signal } = abort;
-
-  const _abort = () => controller.abort();
+  const { controller, signal, on: onAbort } = abort;
 
   onMount(async () => {
     if (!root) throw new Error("Root element not found");
+    const capture = createCapturer(root);
     const harness: TestHarness<T> = abort.proxy({
       ...tester,
       root,
@@ -126,15 +130,24 @@ Make sure to call \`harness.preventRender()\` at the top of your body function b
       set,
       given,
       preventRender,
+      capture,
+      onAbort,
+      untilNextFrame,
     });
 
-    gate = queue.add(mode, async () => {
-      const complete = begin(_abort);
-      await body(harness).catch((e) => {
-        console.error(e);
-      });
-      deferredMap.clear();
-      complete();
+    gate = queue.add(mode, () => {
+      const complete = begin(() => controller.abort("Test has been aborted"));
+      const exit = () => {
+        deferredMap.clear();
+        complete();
+      };
+      return body(harness)
+        .then(exit)
+        .catch((e) => {
+          if (e instanceof TestAborted) return exit();
+          console.error(e); // do something with the error
+          throw e;
+        });
     });
 
     queue.open();
