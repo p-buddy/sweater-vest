@@ -1,6 +1,6 @@
 <script lang="ts" module>
   /* TODO: should retrieve dynamically in the case of playwright? */
-  import * as tester from "@storybook/test";
+  import * as test from "@storybook/test";
   import {
     PromiseQueue,
     type Deferred,
@@ -9,21 +9,56 @@
     createCapturer,
     untilNextFrame,
     TestAborted,
+    type ValueOrGetter,
   } from "./utils.js";
-  import type { Snippet } from "svelte";
+  import { type Snippet, flushSync } from "svelte";
 
   export type TestElements = Record<string, any>;
 
+  type Flush = (..._: any[]) => void;
+
+  interface Setter<T> {
+    /**
+     * Set the values of the test elements according to the items provided in the payload.
+     * @param payload - The values to set the test elements to.
+     */
+    (payload: Partial<T>): void;
+    /**
+     * **_NOTE:_** This overload is intended only for use with <ins>**svelte runes**</ins>.
+     *
+     * Both sets the values of the test elements according to the object returned by the getter,
+     * but also sets up a reactive dependency on `getter` such that when any of the reactive values it references change,
+     * the test elements will be updated to the new values.
+     * @example
+     * ```ts
+     * let value = $state(0);
+     * set(() => ({ value }));
+     * ```
+     * @example
+     * ```ts
+     * let value = $state(0);
+     * const flush = set(() => ({ value }));
+     * flush((value = 1));
+     * ```
+     * @param getter - A function that returns the values to set the test elements to.
+     * Any reactive values referenced in the function body will be tracked as dependencies.
+     * @returns A function that can be used to immediately flush reactive changes (e.g. internally calls `svelte.flushSync`).
+     * For syntatic sugar purposes, it takes any abritrary number of arguments,
+     * so you can update a rune and flush it's changes in a single line (see the second example above).
+     */
+    (getter: () => Partial<T>): Flush;
+  }
+
   type TestHarness<T extends TestElements> = {
     given: (...keys: (keyof T)[]) => Promise<Pick<T, (typeof keys)[number]>>;
-    set: (value: Partial<T>) => void;
+    set: Setter<T>;
     root: HTMLElement;
     preventRender: () => () => void;
     signal: AbortSignal;
     onAbort: (fn: () => void) => void;
     capture: ReturnType<typeof createCapturer>;
     untilNextFrame: typeof untilNextFrame;
-  } & typeof tester;
+  } & typeof test;
 
   type Mode = Required<PromiseQueue>["Types"]["Task"]["mode"];
 
@@ -58,6 +93,7 @@ Make sure to call \`harness.preventRender()\` at the top of your body function b
 
 <script lang="ts" generics="T extends TestElements">
   import { onMount } from "svelte";
+  import { createSubscriber } from "svelte/reactivity";
 
   let {
     body,
@@ -67,7 +103,10 @@ Make sure to call \`harness.preventRender()\` at the top of your body function b
     begin,
   }: Props<T> & { begin: Begin } = $props();
 
-  const deferredMap = new Map<string | symbol, Deferred<any>>();
+  type MapKey = string | symbol;
+  type Subscriber = ReturnType<typeof createSubscriber>;
+  const subscriberMap = new Map<MapKey, Subscriber>();
+  const deferredMap = new Map<MapKey, Deferred<any>>();
 
   let root = $state.raw<HTMLDivElement>();
   let gate = $state.raw<Promise<any>>();
@@ -82,17 +121,35 @@ Make sure to call \`harness.preventRender()\` at the top of your body function b
       retrieve(deferredMap, prop).resolve(value);
       return true;
     },
-    get: (target, prop) => target[prop as keyof T],
+    get: (target, prop) => {
+      subscriberMap.get(prop)?.();
+      return target[prop as keyof T];
+    },
   });
 
   type Harness = TestHarness<T>;
 
   const abort = createTestAbortMechanism();
 
-  const set: Harness["set"] = abort.wrap((obj: Partial<T>) =>
+  const setValue = (obj: Partial<T>) =>
     Object.entries(obj).forEach(([key, value]) => {
       pocket[key as keyof T] = value;
-    }),
+    });
+
+  const set: Harness["set"] = abort.wrap(
+    (payload: ValueOrGetter<Partial<T>>) => {
+      if (typeof payload !== "function") return setValue(payload);
+      for (const key of Object.keys(payload()))
+        subscriberMap.set(
+          key,
+          createSubscriber((update) =>
+            $effect.root(() => {
+              $effect(() => (setValue(payload()), update()));
+            }),
+          ),
+        );
+      return () => flushSync();
+    },
   );
 
   const given: Harness["given"] = async (...keys) => {
@@ -124,7 +181,7 @@ Make sure to call \`harness.preventRender()\` at the top of your body function b
     if (!root) throw new Error("Root element not found");
     const capture = createCapturer(root);
     const harness: TestHarness<T> = abort.proxy({
-      ...tester,
+      ...test,
       root,
       signal,
       set,
@@ -139,6 +196,7 @@ Make sure to call \`harness.preventRender()\` at the top of your body function b
       const complete = begin(() => controller.abort("Test has been aborted"));
       const exit = () => {
         deferredMap.clear();
+        subscriberMap.clear();
         complete();
       };
       return body(harness)

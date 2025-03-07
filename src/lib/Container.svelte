@@ -95,15 +95,16 @@
 
   const { promise, resolve } = deferred<API>();
 
-  const apply = (props: RunnerProps) => {
-    props.mode ??= mode;
-  };
+  const withDefaults = (props: RunnerProps) => ({
+    ...props,
+    mode: props.mode ?? mode,
+  });
 
   export const push = async (props: RunnerProps) => {
     pending.abort ??= abort();
     const [api] = await Promise.all([promise, pending.abort]);
     const index = count++;
-    apply(props);
+    props = withDefaults(props);
     warnIfFirstAndHasPosition(index, props);
     api.addSnippetPanel("child", props, options(index, props));
   };

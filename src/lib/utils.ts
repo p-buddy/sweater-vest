@@ -2,7 +2,10 @@ import { getContext, setContext, type Component, mount } from "svelte";
 import type Container from "./Container.svelte";
 import { toPng, toJpeg, toBlob, toPixelData, toSvg, toCanvas } from "html-to-image";
 
-type Fn = (...args: any[]) => any;
+export type Fn = (...args: any[]) => any;
+
+export type ValueOrGetter<T> = T | (() => T);
+
 
 /** Can be replaced in the future with `Promise.withResolvers` */
 export const deferred = <T,>() => {

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { TestAborted } from "$lib/utils.js";
-  import Sweater from "$lib/Sweater.svelte";
+  import { Sweater } from "$lib/index.js";
 
   let key = $state(0);
 
@@ -15,6 +15,7 @@
 
 {#key key}
   <Sweater
+    name="Test aborts on re-render (e.g. on hot reload)"
     body={async ({ given, expect, onAbort, untilNextFrame, root, set }) => {
       expect(rendered).toBe(key);
       const { div } = await given("div");
@@ -28,11 +29,12 @@
       should = 0;
       shouldNot = 0;
 
-      let exit = false;
-      onAbort(() => (exit = true));
       expect(div).toHaveTextContent(`${key}`);
       expect(div.parentElement).toBe(root);
       expect(root.parentElement).not.toBe(null);
+
+      let exit = false;
+      onAbort(() => (exit = true));
       key++;
       while (!exit) await untilNextFrame();
       shouldGetHere();
