@@ -6,7 +6,6 @@ export type Fn = (...args: any[]) => any;
 
 export type ValueOrGetter<T> = T | (() => T);
 
-
 /** Can be replaced in the future with `Promise.withResolvers` */
 export const deferred = <T,>() => {
   let resolve!: (value: T | PromiseLike<T>) => void;

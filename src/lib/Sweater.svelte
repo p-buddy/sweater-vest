@@ -12,7 +12,9 @@
   };
 
   type Props<T extends TestElements> = TestElements extends T
-    ? ConfigProps
+    ? keyof T extends never
+      ? RunnerProps<{}>
+      : ConfigProps
     : RunnerProps<T>;
 
   const is = <T extends "config" | "test">(
@@ -28,21 +30,20 @@
   const counts = {
     tests: 0,
     configs: 0,
+    sum: () => counts.tests + counts.configs,
   };
-
-  const sum = () => counts.tests + counts.configs;
 </script>
 
 <script lang="ts" generics="T extends TestElements">
   let props: Props<T> = $props();
 
-  const index = sum();
+  const index = counts.sum();
 
   onMount(() => {
     const test = is("test", props);
     if (test) (containers.context ?? containers.find(index)).push(props);
     counts[test ? "tests" : "configs"]--;
-    if (sum() > 0) return;
+    if (counts.sum() > 0) return;
     containers.each((container) => container.setTotal(containers.total));
     containers.reset();
     next();
