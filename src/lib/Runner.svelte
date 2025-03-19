@@ -13,7 +13,7 @@
   } from "./utils.js";
   import { type Snippet, flushSync } from "svelte";
 
-  export type TestElements = Record<string, any>;
+  export type PocketElements = Record<string, any>;
 
   type Flush = (..._: any[]) => void;
 
@@ -49,7 +49,7 @@
     (getter: () => Partial<T>): Flush;
   }
 
-  type TestHarness<T extends TestElements> = {
+  type TestHarness<T extends PocketElements> = {
     given: (...keys: (keyof T)[]) => Promise<Pick<T, (typeof keys)[number]>>;
     set: Setter<T>;
     root: HTMLElement;
@@ -62,7 +62,7 @@
 
   type Mode = Required<PromiseQueue>["Types"]["Task"]["mode"];
 
-  export type Props<T extends TestElements = TestElements> = {
+  export type Props<T extends PocketElements = PocketElements> = {
     vest: Snippet<[pocket: T]>;
     body: (harness: TestHarness<T>) => Promise<void>;
     name?: string;
@@ -91,7 +91,7 @@ Make sure to call \`harness.preventRender()\` at the top of your body function b
   };
 </script>
 
-<script lang="ts" generics="T extends TestElements">
+<script lang="ts" generics="T extends PocketElements">
   import { onMount } from "svelte";
   import { createSubscriber } from "svelte/reactivity";
 

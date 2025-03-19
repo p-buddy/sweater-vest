@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  import type { Props as RunnerProps, TestElements } from "./Runner.svelte";
+  import type { Props as RunnerProps, PocketElements } from "./Runner.svelte";
   import type { Props as ContainerProps } from "./Container.svelte";
   import Container, { next } from "./Container.svelte";
   import { onMount, type Snippet } from "svelte";
@@ -11,7 +11,7 @@
     children?: Snippet;
   };
 
-  type Props<T extends TestElements> = TestElements extends T
+  type Props<T extends PocketElements> = PocketElements extends T
     ? keyof T extends never
       ? RunnerProps<{}>
       : ConfigProps
@@ -34,7 +34,7 @@
   };
 </script>
 
-<script lang="ts" generics="T extends TestElements">
+<script lang="ts" generics="T extends PocketElements">
   let props: Props<T> = $props();
 
   const index = counts.sum();
