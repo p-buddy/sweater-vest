@@ -59,38 +59,50 @@ The `Sweater` component expects a `vest` snippet to be defined which takes a sin
 
 <!-- p↓ END -->
 
+#### `pocket` Argument Type
+
 You as the test author will determine the type of the `pocket` argument based on the requirements of your test. The type should include:
 
-- any elements within your markup that you want to `bind:this` to in order to interact with in your test's [body](#body-function-prop). For example:
+- Any elements and/or componets within your markup that you want to `bind:this` to in order to interact with in your test's [body](#body-function-prop). For example:
 
 [](?register=recipe(no-template)&region=replace(templated,...))
 
-[](./src/routes/examples/anatomy/+page.svelte?apply=recipe(trim-pocket,no-template)&region=extract(snippet),trim-start(bind),single-line(pocket),splice-end(pocket,-1),replace(value,...))
+[](?register=recipe(wrap-snippet)&region=splice-start(snippet,,...-line--line-),splice-end(snippet,0,-line--line-...))
+
+[](./src/routes/examples/anatomy/+page.svelte?apply=recipe(trim-pocket,no-template)&region=extract(snippet),trim-start(bind),single-line(pocket),splice-end(pocket,-1),replace(value,...)&apply=recipe(wrap-snippet))
 <!-- p↓ BEGIN -->
-<!-- p↓ length lines: 9 chars: 140 -->
+<!-- p↓ length lines: 13 chars: 150 -->
 
 ```svelte
+...
+
 {#snippet vest(pocket: { container: HTMLDivElement; ... })}
   <div bind:this={pocket.container}>
     ...
   </div>
 {/snippet}
+
+...
 ```
 
 <!-- p↓ END -->
 
-- any data that will be utilized within your markup (which will be initilalized / manipulated by your test's [body](#body-function-prop))
+- Any data that will be utilized within your markup (which will be initilalized / manipulated by your test's [body](#body-function-prop)). For example:
 
-[](./src/routes/examples/anatomy/+page.svelte?apply=recipe(trim-pocket)&region=extract(snippet,para),trim-start(bind),single-line(pocket),splice-end(pocket,-1),replace(container,'...,'),splice-start(bind,-11),replace(bind,'...-unangle-'))
+[](./src/routes/examples/anatomy/+page.svelte?apply=recipe(trim-pocket)&region=extract(snippet,para),trim-start(bind),single-line(pocket),splice-end(pocket,-1),replace(container,'...,'),splice-start(bind,-11),replace(bind,'...-unangle-')&apply=recipe(wrap-snippet))
 <!-- p↓ BEGIN -->
-<!-- p↓ length lines: 9 chars: 115 -->
+<!-- p↓ length lines: 13 chars: 125 -->
 
 ```svelte
+...
+
 {#snippet vest(pocket: { ..., value: string; })}
   <div ...>
     {pocket.value}
   </div>
 {/snippet}
+
+...
 ```
 
 <!-- p↓ END -->
