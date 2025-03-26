@@ -67,21 +67,19 @@ You as the test author will determine the type of the `pocket` argument based on
 
 [](?register=recipe(no-template)&region=replace(templated,...))
 
-[](?register=recipe(wrap-snippet)&region=splice-start(snippet,,...-line--line-),splice-end(snippet,0,-line--line-...))
+[](?register=recipe(wrap-snippet)&region=splice-start(snippet,,...-line-),splice-end(snippet,0,-line-...))
 
 [](./src/routes/examples/anatomy/+page.svelte?apply=recipe(trim-pocket,no-template)&region=extract(snippet),trim-start(bind),single-line(pocket),splice-end(pocket,-1),replace(value,...)&apply=recipe(wrap-snippet))
 <!-- p↓ BEGIN -->
-<!-- p↓ length lines: 13 chars: 150 -->
+<!-- p↓ length lines: 11 chars: 148 -->
 
 ```svelte
 ...
-
 {#snippet vest(pocket: { container: HTMLDivElement; ... })}
   <div bind:this={pocket.container}>
     ...
   </div>
 {/snippet}
-
 ...
 ```
 
@@ -91,17 +89,15 @@ You as the test author will determine the type of the `pocket` argument based on
 
 [](./src/routes/examples/anatomy/+page.svelte?apply=recipe(trim-pocket)&region=extract(snippet,para),trim-start(bind),single-line(pocket),splice-end(pocket,-1),replace(container,'...,'),splice-start(bind,-11),replace(bind,'...-unangle-')&apply=recipe(wrap-snippet))
 <!-- p↓ BEGIN -->
-<!-- p↓ length lines: 13 chars: 125 -->
+<!-- p↓ length lines: 11 chars: 123 -->
 
 ```svelte
 ...
-
 {#snippet vest(pocket: { ..., value: string; })}
   <div ...>
     {pocket.value}
   </div>
 {/snippet}
-
 ...
 ```
 
