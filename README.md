@@ -1,10 +1,21 @@
 # Sweater Vest (<ins style="color:white"><span style="color:#aa1e1e"><span>**S**</span><sup style="color:grey">weater</sup> <span style="color:#aa1e1e">**v**</span><sub style="color:#aa1e1e">_elte_</sub></span> <sub style="">_t_</sub><span style="text-">est</span></ins>)
 
+[Sweater Vest]() is a svelte utility (and corresponding component) that simplifies testing svelte components in browser environments, especially in cases where multiple components are being tested together.
+
+
 ## Anatomy of a Sweater Vest Test
 
-### `Sweater` Component (Required)
+[](?register=recipe(pkg)&region=remap(,'''$lib_slash_index.js''','''sweater-vest''',_))
 
-[](./src/routes/examples/anatomy/+page.svelte?region=replace(pkg,'''sweater-vest''',_),remap(component-head,body-equal--curly-,),splice(body,5),replace(body,...),replace(snippet,...))
+[](?register=recipe(no-body)&region=splice-end(body,5),splice-start(body,-6),replace(body,'...'))
+
+[](?register=recipe(no-snippet)&region=replace(snippet,'...'))
+
+### `Sweater` Component
+
+Begin a [Sweater Vest]() test by utilizing the `Sweater` component imported from the `"sweater-vest"` package.
+
+[](./src/routes/examples/anatomy/+page.svelte?apply=recipe(pkg,no-body,no-snippet))
 <!-- p↓ BEGIN -->
 <!-- p↓ length lines: 13 chars: 121 -->
 
@@ -22,17 +33,25 @@
 
 <!-- p↓ END -->
 
-### `vest` Snippet (Required)
+### `vest` Snippet
 
-[](./src/routes/examples/anatomy/+page.svelte?region=remap(snippet-head,-line-,-),remap(snippet-head,-----),remap(snippet-head,',---'),extract(component),splice(body,-6),splice(body,5),replace(body,...),replace(type,...),replace(markup,...))
+The `Sweater` component expects a `vest` snippet to be defined which takes a single argument (which is called `pocket` as a convention).
+
+[](?register=recipe(trim-pocket)&region=trim(pocket))
+
+[](?register=recipe(no-pocket-type)&region=splice-end(type,1),replace(type,...))
+
+[](?register=recipe(no-markup)&region=replace(markup,...))
+
+[](./src/routes/examples/anatomy/+page.svelte?region=extract(component)&apply=recipe(no-body,no-pocket-type,trim-pocket,no-markup))
 <!-- p↓ BEGIN -->
-<!-- p↓ length lines: 11 chars: 99 -->
+<!-- p↓ length lines: 11 chars: 95 -->
 
 ```svelte
 <Sweater
   ...
 >
-  {#snippet vest(pocket: ...,   )}
+  {#snippet vest(pocket: ...)}
     ...
   {/snippet}
 </Sweater>
@@ -40,44 +59,45 @@
 
 <!-- p↓ END -->
 
-#### Type of `pocket`
+You as the test author will determine the type of the `pocket` argument based on the requirements of your test. The type should include:
 
-You decide the type of the `pocket` argument, which should be an object containing the following properties:
-- any elements that you want to `bind:this` to in order to interact with in your test body. For example:
+- any elements within your markup that you want to `bind:this` to in order to interact with in your test's [body](#body-function-prop). For example:
 
-[](./src/routes/examples/anatomy/+page.svelte?region=remap(pocket,-line-,-),splice(pocket,-5),splice(pocket,3),remap(pocket,-pocket,pocket),remap(snippet-head,----),remap(snippet-head,-curly---,-curly-),remap(snippet-head,',---'),extract(snippet),remap(bind,-,),replace(para,...),replace(value-prop,...),remap(pocket,--),splice(type,1))
+[](?register=recipe(no-template)&region=replace(templated,...))
+
+[](./src/routes/examples/anatomy/+page.svelte?apply=recipe(trim-pocket,no-template)&region=extract(snippet),trim-start(bind),single-line(pocket),splice-end(pocket,-1),replace(value,...))
 <!-- p↓ BEGIN -->
-<!-- p↓ length lines: 9 chars: 150 -->
+<!-- p↓ length lines: 9 chars: 140 -->
 
 ```svelte
-  {#snippet vest(pocket: { container: HTMLDivElement; ... })}
-    <div bind:this={pocket.container}>
-      ...
-    </div>
-  {/snippet}
+{#snippet vest(pocket: { container: HTMLDivElement; ... })}
+  <div bind:this={pocket.container}>
+    ...
+  </div>
+{/snippet}
 ```
 
 <!-- p↓ END -->
 
-- any data that will be utilized within your test markup (that should be set within your test body)
+- any data that will be utilized within your markup (which will be initilalized / manipulated by your test's [body](#body-function-prop))
 
-[](./src/routes/examples/anatomy/+page.svelte?region=remap(pocket,-line-,-),splice(pocket,-5),splice(pocket,3),remap(pocket,-pocket,pocket),remap(snippet-head,----),remap(snippet-head,-curly---,-curly-),remap(snippet-head,',---'),extract(snippet),replace(div-prop,'...,'),remap(type,--),splice(type,1),replace(div-open,...),splice(markup,0,-----...),remove(div-close))
+[](./src/routes/examples/anatomy/+page.svelte?apply=recipe(trim-pocket)&region=extract(snippet,para),trim-start(bind),single-line(pocket),splice-end(pocket,-1),replace(container,'...,'),splice-start(bind,-11),replace(bind,'...-unangle-'))
 <!-- p↓ BEGIN -->
-<!-- p↓ length lines: 9 chars: 123 -->
+<!-- p↓ length lines: 9 chars: 115 -->
 
 ```svelte
-  {#snippet vest(pocket: { ..., value: string; })}
-    ...
-      <p>{pocket.value}</p>
-    ...
-  {/snippet}
+{#snippet vest(pocket: { ..., value: string; })}
+  <div ...>
+    {pocket.value}
+  </div>
+{/snippet}
 ```
 
 <!-- p↓ END -->
 
-### `body` Function Prop (Required)
+### `body` Function Prop
 
-[](./src/routes/examples/anatomy/+page.svelte?region=extract(component),replace(snippet,...),replace(implementation,...),remap(body,-async,async))
+[](./src/routes/examples/anatomy/+page.svelte?region=extract(component),replace(snippet,...),replace(implementation,...),splice-start(body,1))
 <!-- p↓ BEGIN -->
 <!-- p↓ length lines: 11 chars: 85 -->
 
@@ -95,33 +115,29 @@ You decide the type of the `pocket` argument, which should be an object containi
 
 ### Complete 
 
-[](./src/routes/examples/anatomy/+page.svelte?region)
+[](./src/routes/examples/anatomy/+page.svelte?apply=recipe(trim-pocket,pkg)&region=splice-start(body,1),single-line(pocket),splice-end(pocket,-1),splice-start(bind,1))
 <!-- p↓ BEGIN -->
-<!-- p↓ length lines: 26 chars: 391 -->
+<!-- p↓ length lines: 22 chars: 490 -->
 
 ```svelte
 <script lang="ts">
-  import { Sweater } from /** pkg */ "$lib/index.js" /** pkg */;
+  import { Sweater } from "sweater-vest";
 </script>
 
 <Sweater
-  body={ async (harness) => {
-    const { set } = harness;
+  body={async (harness) => {
+    const { set, given, expect } = harness;
+    set({ value: "Hello, world!" });
+    const { container } = await given("container");
+    expect(container.textContent).toBe("Hello, world!");
   }}
 >
-  {#snippet vest(
-    pocket:
-    {
-      container: HTMLDivElement;
-      value: string;
-    },
-  )}
-    <div bind:this={ pocket.container}>
-      <p>{pocket.value}</p>
+  {#snippet vest(pocket: { container: HTMLDivElement; value: string; })}
+    <div bind:this={pocket.container}>
+      {pocket.value}
     </div>
   {/snippet}
 </Sweater>
-
 ```
 
 <!-- p↓ END -->

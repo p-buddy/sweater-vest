@@ -1,47 +1,42 @@
 <script lang="ts">
-  import { Sweater } from /** pkg */ "$lib/index.js" /** pkg */;
+  import { Sweater } from "$lib/index.js";
 </script>
 
-<!-- pd: component begin -->
-<!-- pd: component-head begin -->
+<!-- pd: component -->
 <Sweater
-  body={/* pd: body begin */ async (harness) => {
-    /* pd: implementation begin */
-    const { set } = harness;
-    /* pd: implementation end */
-    /* pd: body end */
+  body={/* pd: body */ async (harness) => {
+    /* pd: implementation */
+    const { set, given, expect } = harness;
+    set({ value: "Hello, world!" });
+    const { container } = await given("container");
+    expect(container.textContent).toBe("Hello, world!");
+    /* pd: implementation */
+    /* pd: body */
   }}
 >
-  <!-- pd: component-head end -->
-  <!-- pd: snippet begin -->
-  <!-- pd: snippet-head begin -->
+  <!-- pd: snippet -->
   {#snippet vest(
-    /* pd: pocket begin */
-    pocket: /* pd: type begin */
+    /* pd: pocket */
+    pocket: /* pd: type */
     {
-      /* pd: div-prop */
+      /* pd: container */
       container: HTMLDivElement;
-      /* pd: div-prop */
-      /* pd: value-prop */
+      /* pd: container */
+      /* pd: value */
       value: string;
-      /* pd: value-prop */
-    } /* pd: type end */,
-    /* pd: pocket end */
+      /* pd: value */
+    } /* pd: type */,
+    /* pd: pocket */
   )}
-    <!-- pd: snippet-head end -->
-    <!-- pd: markup begin -->
-    <!-- pd: div-open begin -->
-    <div bind:this={/* pd: bind begin */ pocket.container}>
-      <!-- pd: bind end -->
-      <!-- pd: div-open end -->
-      <!-- pd: para begin -->
-      <p>{pocket.value}</p>
-      <!-- pd: para end -->
-      <!-- pd: div-close begin -->
+    <!-- pd: markup -->
+    <div bind:this={/* pd: bind */ pocket.container}>
+      <!-- pd: bind -->
+      <!-- pd: templated -->
+      {pocket.value}
+      <!-- pd: templated -->
     </div>
-    <!-- pd: div-close end -->
-    <!-- pd: markup end -->
+    <!-- pd: markup -->
   {/snippet}
-  <!-- pd: snippet end -->
+  <!-- pd: snippet -->
 </Sweater>
-<!-- pd: component end -->
+<!-- pd: component -->
