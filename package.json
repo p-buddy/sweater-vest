@@ -3,8 +3,9 @@
 	"version": "0.0.1",
 	"private": false,
 	"scripts": {
+		"doc": "npx @p-buddy/parkdown",
 		"dev": "vite dev",
-		"build": "vite build && npm run prepack",
+		"build": "vite build && npm run prepack && npm run doc",
 		"preview": "vite preview",
 		"prepare": "pnpm up --latest @p-buddy/* && svelte-kit sync || echo ''",
 		"prepack": "svelte-kit sync && svelte-package && publint",
@@ -12,8 +13,7 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run && npm run test:e2e",
-		"test:e2e": "playwright test",
-		"doc": "npx @p-buddy/parkdown"
+		"test:e2e": "playwright test"
 	},
 	"files": [
 		"dist",
@@ -48,6 +48,7 @@
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
 		"@testing-library/jest-dom": "^6.6.3",
 		"@testing-library/svelte": "^5.2.4",
+		"@types/node": "^22.13.13",
 		"jsdom": "^26.0.0",
 		"publint": "^0.3.2",
 		"svelte": "^5.0.0",
