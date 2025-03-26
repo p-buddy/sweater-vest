@@ -67,9 +67,7 @@ You as the test author will determine the type of the `pocket` argument based on
 
 [](?register=recipe(no-template)&region=replace(templated,...))
 
-[](?register=recipe(wrap-snippet)&region=splice-start(snippet,,...-line-),splice-end(snippet,0,-line-...))
-
-[](./src/routes/examples/anatomy/+page.svelte?apply=recipe(trim-pocket,no-template)&region=extract(snippet),trim-start(bind),single-line(pocket),splice-end(pocket,-1),replace(value,...)&apply=recipe(wrap-snippet))
+[](./src/routes/examples/anatomy/+page.svelte?apply=recipe(trim-pocket,no-template)&region=extract(snippet),trim-start(bind),single-line(pocket),splice-end(pocket,-1),replace(value,...))
 <!-- p↓ BEGIN -->
 <!-- p↓ length lines: 11 chars: 148 -->
 
@@ -87,7 +85,7 @@ You as the test author will determine the type of the `pocket` argument based on
 
 - Any data that will be utilized within your markup (which will be initilalized / manipulated by your test's [body](#body-function-prop)). For example:
 
-[](./src/routes/examples/anatomy/+page.svelte?apply=recipe(trim-pocket)&region=extract(snippet,para),trim-start(bind),single-line(pocket),splice-end(pocket,-1),replace(container,'...,'),splice-start(bind,-11),replace(bind,'...-unangle-')&apply=recipe(wrap-snippet))
+[](./src/routes/examples/anatomy/+page.svelte?apply=recipe(trim-pocket)&region=extract(snippet,para),trim-start(bind),single-line(pocket),splice-end(pocket,-1),replace(container,'...,'),splice-start(bind,-11),replace(bind,'...-unangle-'))
 <!-- p↓ BEGIN -->
 <!-- p↓ length lines: 11 chars: 123 -->
 
