@@ -9,7 +9,7 @@
 		"dev": "vite dev",
 		"build": "vite build && npm run prepack",
 		"preview": "vite preview",
-		"prepare": "pnpm up --latest @p-buddy/* && (svelte-kit sync || echo '') && npm run doc:commit && npm version patch",
+		"prepublishOnly": "pnpm up --latest @p-buddy/* && (svelte-kit sync || echo '') && npm run doc:commit && npm version patch",
 		"prepack": "svelte-kit sync && svelte-package && publint",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -35,7 +35,7 @@
 		}
 	},
 	"dependencies": {
-		"@p-buddy/dockview-svelte": "^0.0.6",
+		"@p-buddy/dockview-svelte": "^0.0.9",
 		"@storybook/test": "^8.6.3",
 		"html-to-image": "^1.11.13"
 	},
