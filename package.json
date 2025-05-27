@@ -1,6 +1,6 @@
 {
 	"name": "sweater-vest",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"private": false,
 	"scripts": {
 		"auto:commit:tracked": "git add -u && (git diff-index --quiet HEAD -- || git commit -m \"Automated commit.\")",
