@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { TestAborted } from "$lib/utils.js";
+  import { TestAborted } from "$lib/utils.svelte.js";
   import { Sweater } from "$lib/index.js";
 
   let key = $state(0);

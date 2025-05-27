@@ -49,7 +49,7 @@
   };
 
   const timeout = (signal: AbortSignal) => {
-    let timeout: number;
+    let timeout: ReturnType<typeof setTimeout>;
     onAbort(signal, () => clearTimeout(timeout));
     return new Promise<void>((resolve) => {
       timeout = setTimeout(() => {
@@ -81,7 +81,7 @@
     type Theme,
   } from "@p-buddy/dockview-svelte";
   import Runner, { type Props as RunnerProps, reset } from "./Runner.svelte";
-  import { deferred, onAbort } from "./utils.js";
+  import { deferred, onAbort } from "./utils.svelte.js";
 
   let { orientation = "HORIZONTAL", theme = "dark", mode }: Props = $props();
 

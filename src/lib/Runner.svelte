@@ -10,7 +10,7 @@
     untilNextFrame,
     TestAborted,
     type ValueOrGetter,
-  } from "./utils.js";
+  } from "./utils.svelte.js";
   import { type Snippet, flushSync } from "svelte";
 
   export type PocketElements = Record<string, any>;

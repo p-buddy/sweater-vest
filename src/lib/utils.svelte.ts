@@ -105,7 +105,7 @@ export const createContainerMap = () => {
             return ((index: number) => {
               while (!target.has(index) && index >= 0) index--;
               const container = target.get(index);
-              if (!container) throw new Error("No container found");
+              if (!container) throw new Error(`No container found at index ${index}`);
               return container;
             }) satisfies ContainerMap[typeof key];
           case "total":
