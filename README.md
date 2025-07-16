@@ -63,7 +63,7 @@ The `Sweater` component expects a `vest` snippet to be defined which takes a sin
 
 <!-- p↓ END -->
 
-#### `pocket` Argument Type
+#### `pocket` Snippet Argument Type
 
 You as the test author will determine the type of the `pocket` argument based on the requirements of your test. The type should include:
 
